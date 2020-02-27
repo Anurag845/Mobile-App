@@ -91,10 +91,10 @@ class _TasksState extends State<Tasks> {
       itemBuilder: (BuildContext context, int index) {
         return InkWell(
           child: ListTile(
-            title: Text(tasks[index]["task_name"]),
+            title: Text(tasks[index]["task_title"]),
           ),
           onTap: () {
-            _showDialog(tasks[index]["task_name"]);
+            _showDialog(tasks[index]["task_title"]);
           },
         );
       },
