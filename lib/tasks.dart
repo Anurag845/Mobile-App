@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -15,6 +17,29 @@ class Tasks extends StatefulWidget {
 
 class _TasksState extends State<Tasks> {
 
+  bool isData = false;
+  List tasks = List();
+
+  _gettasks() async {
+    var response = await http.post("http://192.168.43.18/api/tasks", body: {
+      "offering_id": "${widget.offid}",
+    });
+
+    if(response.statusCode == 200) {
+      tasks = json.decode(response.body);
+      isData = true;
+      setState(() {
+        print("Tasks retrieved");
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _gettasks();
+  }
+
   void submitStart () {
     var curr = new DateTime.now();
     var startstamp = curr.toString();
@@ -31,6 +56,49 @@ class _TasksState extends State<Tasks> {
       "start_time": starttime,
       "start_stamp": startstamp,
     });
+  }
+
+  void _showDialog(String name) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("Begin?"),
+          content: new Text("Do you want to begin $name?"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                submitStart();
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget getTasks() {
+    return ListView.builder(
+      itemCount: tasks.length,
+      itemBuilder: (BuildContext context, int index) {
+        return InkWell(
+          child: ListTile(
+            title: Text(tasks[index]["task_name"]),
+          ),
+          onTap: () {
+            _showDialog(tasks[index]["task_name"]);
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -56,37 +124,10 @@ class _TasksState extends State<Tasks> {
           ),
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: InkWell(
-              child: Text("Task 1"),
-              onTap: () {
-                submitStart();
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: InkWell(
-              child: Text("Task 2"),
-              onTap: () {
-                
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: InkWell(
-              child: Text("Task 3"),
-              onTap: () {
-                
-              },
-            ),
-          )
-        ],
-      ),
+      body: !isData ? new Center(
+              child: new CircularProgressIndicator(),
+            )
+            : getTasks(),
     );
   }
 }
