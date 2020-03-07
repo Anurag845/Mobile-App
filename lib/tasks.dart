@@ -40,7 +40,7 @@ class _TasksState extends State<Tasks> {
     _gettasks();
   }
 
-  void submitStart () {
+  void submitStart (int isbillable) {
     var curr = new DateTime.now();
     var startstamp = curr.toString();
     var dformatter = new DateFormat('yyyy-MM-dd');
@@ -55,10 +55,11 @@ class _TasksState extends State<Tasks> {
       "start_date": startdate,
       "start_time": starttime,
       "start_stamp": startstamp,
+      "is_billable": isbillable.toString(),
     });
   }
 
-  void _showDialog(String name) {
+  void _showDialog(String name,int isbillable) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -69,7 +70,7 @@ class _TasksState extends State<Tasks> {
             new FlatButton(
               child: new Text("Yes"),
               onPressed: () {
-                submitStart();
+                submitStart(isbillable);
                 Navigator.of(context).pop();
               },
             ),
@@ -94,7 +95,7 @@ class _TasksState extends State<Tasks> {
             title: Text(tasks[index]["task_title"]),
           ),
           onTap: () {
-            _showDialog(tasks[index]["task_title"]);
+            _showDialog(tasks[index]["task_title"],tasks[index]["is_billable"]);
           },
         );
       },

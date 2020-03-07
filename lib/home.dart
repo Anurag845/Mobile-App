@@ -25,7 +25,7 @@ class _HomeState extends State<Home> {
   String client;
   bool isData = false;
 
-  _retrieve() async {
+  void _retrieve() async {
     var response = await http.post("http://192.168.43.18/api/summary", body: {
       "emp_id": "${widget.employeeid}",
     });
@@ -70,9 +70,12 @@ class _HomeState extends State<Home> {
     }
     else {
       return () {
+        isData = false;
         stop();
-        setState(() {
+        Future.delayed(const Duration(milliseconds: 2000), () {
+          setState(() {
           _retrieve();
+          });
         });
       };
     }
@@ -84,199 +87,213 @@ class _HomeState extends State<Home> {
     _retrieve();
   }
 
+  Future<void> _refresh() async {
+    setState(() {
+      _retrieve();
+    });
+  }
+
   Widget summaryPage() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Card(
-        elevation: 5,
-        margin: EdgeInsets.all(15),
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Text("Welcome " + "$name"),
-            ),
-
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Text("Today's Summary",style: TextStyle(fontWeight: FontWeight.bold),),
-            ),
-
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        child: Text("First Punch: "),
-                        padding: EdgeInsets.all(5),
-                      ),
-
-                      Padding(
-                        child: Text("Last Active: "),
-                        padding: EdgeInsets.all(5),
-                      ),
-
-                      Padding(
-                        child: Text("Active Hours: "),
-                        padding: EdgeInsets.all(5),
-                      ),
-
-                      Padding(
-                        child: Text("Billable Hours: "),
-                        padding: EdgeInsets.all(5),
-                      ),
-                    ],
-                  ),
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        child: Text("$firstpunch"),
-                        padding: EdgeInsets.all(5),
-                      ),
-
-                      Padding(
-                        child: Text("$lastactive"),
-                        padding: EdgeInsets.all(5),
-                      ),
-
-                      Padding(
-                        child: Text("$activehours"),
-                        padding: EdgeInsets.all(5),
-                      ),
-
-                      Padding(
-                        child: Text("$activehours"),
-                        padding: EdgeInsets.all(5),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(5),
-                    child: FlatButton(
-                      color: Colors.grey[350],
-                      padding: EdgeInsets.all(5),
-                      onPressed: () {
-                        Navigator
-                        .push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Allocation(employeeid: "${widget.employeeid}"),
-                          ),
-                        )
-                        .then((value) {
-                          setState(() {
-                            _retrieve();
-                          });
-                        });
-                      },
-                      child: Text("My Allocation"),
+    return Container(
+      child: Center(
+        child: RefreshIndicator(
+          onRefresh: _refresh,
+          child: ListView(
+            children: <Widget>[
+              Card(
+                elevation: 5,
+                margin: EdgeInsets.all(15),
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text("Welcome " + "$name"),
                     ),
-                  ),
 
-                  Padding(
-                    padding: EdgeInsets.all(5),
-                    child: FlatButton(
-                      color: Colors.grey[350],
-                      padding: EdgeInsets.all(5),
-                      onPressed: () {
-                        Navigator
-                        .push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Everything(employeeid: "${widget.employeeid}"),
-                          ),
-                        )
-                        .then((value) {
-                          setState(() {
-                            _retrieve();
-                          });
-                        });
-                      },
-                      child: Text("Something Else"),
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Text("Today's Summary",style: TextStyle(fontWeight: FontWeight.bold),),
                     ),
-                  ),
-                ],
+
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                child: Text("First Punch: "),
+                                padding: EdgeInsets.all(5),
+                              ),
+
+                              Padding(
+                                child: Text("Last Active: "),
+                                padding: EdgeInsets.all(5),
+                              ),
+
+                              Padding(
+                                child: Text("Active Hours: "),
+                                padding: EdgeInsets.all(5),
+                              ),
+
+                              Padding(
+                                child: Text("Billable Hours: "),
+                                padding: EdgeInsets.all(5),
+                              ),
+                            ],
+                          ),
+
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                child: Text("$firstpunch"),
+                                padding: EdgeInsets.all(5),
+                              ),
+
+                              Padding(
+                                child: Text("$lastactive"),
+                                padding: EdgeInsets.all(5),
+                              ),
+
+                              Padding(
+                                child: Text("$activehours"),
+                                padding: EdgeInsets.all(5),
+                              ),
+
+                              Padding(
+                                child: Text("$activehours"),
+                                padding: EdgeInsets.all(5),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.all(5),
+                            child: FlatButton(
+                              color: Colors.grey[350],
+                              padding: EdgeInsets.all(5),
+                              onPressed: () {
+                                Navigator
+                                .push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Allocation(employeeid: "${widget.employeeid}"),
+                                  ),
+                                )
+                                .then((value) {
+                                  setState(() {
+                                    _retrieve();
+                                  });
+                                });
+                              },
+                              child: Text("My Allocation"),
+                            ),
+                          ),
+
+                          Padding(
+                            padding: EdgeInsets.all(5),
+                            child: FlatButton(
+                              color: Colors.grey[350],
+                              padding: EdgeInsets.all(5),
+                              onPressed: () {
+                                Navigator
+                                .push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Everything(employeeid: "${widget.employeeid}"),
+                                  ),
+                                )
+                                .then((value) {
+                                  setState(() {
+                                    _retrieve();
+                                  });
+                                });
+                              },
+                              child: Text("Something Else"),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Text("Currently Running",style: TextStyle(fontWeight: FontWeight.bold),),
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                child: Text("BV: "),
+                                padding: EdgeInsets.all(5),
+                              ),
+
+                              Padding(
+                                child: Text("Off: "),
+                                padding: EdgeInsets.all(5),
+                              ),
+
+                              Padding(
+                                child: Text("Client: "),
+                                padding: EdgeInsets.all(5),
+                              ),
+                            ],
+                          ),
+
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                child: Text("$bv"),
+                                padding: EdgeInsets.all(5),
+                              ),
+
+                              Padding(
+                                child: Text("$off"),
+                                padding: EdgeInsets.all(5),
+                              ),
+
+                              Padding(
+                                child: Text("$client"),
+                                padding: EdgeInsets.all(5),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                      child: FlatButton(
+                        color: Colors.grey[350],
+                        padding: EdgeInsets.all(5),
+                        onPressed: state(),
+                        child: Text("Stop"),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Text("Currently Running",style: TextStyle(fontWeight: FontWeight.bold),),
-            ),
-
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        child: Text("BV: "),
-                        padding: EdgeInsets.all(5),
-                      ),
-
-                      Padding(
-                        child: Text("Off: "),
-                        padding: EdgeInsets.all(5),
-                      ),
-
-                      Padding(
-                        child: Text("Client: "),
-                        padding: EdgeInsets.all(5),
-                      ),
-                    ],
-                  ),
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        child: Text("$bv"),
-                        padding: EdgeInsets.all(5),
-                      ),
-
-                      Padding(
-                        child: Text("$off"),
-                        padding: EdgeInsets.all(5),
-                      ),
-
-                      Padding(
-                        child: Text("$client"),
-                        padding: EdgeInsets.all(5),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: EdgeInsets.all(5),
-              child: FlatButton(
-                color: Colors.grey[350],
-                padding: EdgeInsets.all(5),
-                onPressed: state(),
-                child: Text("Stop"),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
